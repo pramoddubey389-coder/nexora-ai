@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#050816">
+<meta name="description" content="Nexora AI — One platform for creativity, learning, coding and intelligent tools.">
+<title>Nexora AI — One Platform. Limitless Possibilities.</title>
+
+<style>
+:root {
+  --bg: #050816;
+  --panel: #0c1228;
+  --border: #242e50;
+  --text: #f4f6ff;
+  --muted: #a6b1d0;
+  --purple: #7957ff;
+  --blue: #238cff;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  font-family: system-ui, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+button, input, textarea { font: inherit; }
+
+button { cursor: pointer; }
+
+a { color: inherit; text-decoration: none; }
+
+header {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 15px 5%;
+  background: rgba(5,8,22,.94);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(16px);
+}
+
+.logo {
+  font-size: 23px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.logo span {
+  color: #62a9ff;
+}
+
+nav {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+nav a:hover { color: white; }
+
+.container {
+  width: min(1120px, 90%);
+  margin: auto;
+}
+
+.hero {
+  position: relative;
+  overflow: hidden;
+  padding: 76px 0 66px;
+  text-align: center;
+  background:
+    radial-gradient(ellipse at 50% 0%, #30216c88, transparent 60%),
+    radial-gradient(ellipse at 100% 100%, #073f7080, transparent 50%);
+}
+
+.badge {
+  display: inline-block;
+  padding: 8px 13px;
+  border: 1px solid #51409b;
+  border-radius: 50px;
+  background: #191338;
+  color: #c6b8ff;
+  font-size: 12px;
+}
+
+h1 {
+  margin: 22px 0 16px;
+  font-size: clamp(36px, 7vw, 68px);
+  line-height: 1.08;
+  letter-spacing: -2px;
+}
+
+.gradient {
+  background: linear-gradient(100deg, #b8a5ff, #6bbaff, #e6a5ff);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.hero p {
+  max-width: 600px;
+  margin: 0 auto;
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+.prompt {
+  display: flex;
+  max-width: 680px;
+  margin: 30px auto 0;
+  padding: 7px;
+  gap: 8px;
+  background: #0c1228;
+  border: 1px solid #4a4d91;
+  border-radius: 16px;
+}
+
+.prompt input {
+  width: 100%;
+  min-width: 0;
+  padding: 12px;
+  color: white;
+  background: transparent;
+  border: 0;
+  outline: none;
+}
+
+.primary {
+  padding: 12px 20px;
+  color: white;
+  font-weight: 700;
+  border: 0;
+  border-radius: 11px;
+  background: linear-gradient(110deg, #7957ff, #267cff);
+}
+
+.primary:hover { filter: brightness(1.15); }
+
+.section { padding: 35px 0 55px; }
+
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.section-heading h2 {
+  margin: 0 0 7px;
+  font-size: 27px;
+}
+
+.section-heading p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.search {
+  width: 100%;
+  padding: 13px 15px;
+  margin-bottom: 20px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: white;
+  outline-color: var(--purple);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 15px;
+}
+
+.card {
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: linear-gradient(145deg, #111831, #090e20);
+  transition: transform .2s, border-color .2s;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  border-color: #7957ff;
+}
+
+.icon {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  margin-bottom: 18px;
+  border-radius: 13px;
+  background: #282052;
+  border: 1px solid #6951d9;
+  font-size: 23px;
+}
+
+.card h3 { margin: 0 0 9px; font-size: 17px; }
+
+.card p {
+  min-height: 58px;
+  margin: 0 0 17px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.card button {
+  width: 100%;
+  padding: 10px;
+  color: #c8bdff;
+  background: #211944;
+  border: 1px solid #46348a;
+  border-radius: 9px;
+}
+
+.panel {
+  margin-bottom: 50px;
+  padding: 25px;
+  border: 1px solid var(--border);
+  border-radius: 17px;
+  background: var(--panel);
+}
+
+.panel h2 { margin-top: 0; }
+
+.panel p {
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+#toolArea { scroll-margin-top: 90px; }
+
+textarea {
+  display: block;
+  width: 100%;
+  min-height: 125px;
+  padding: 15px;
+  margin: 15px 0;
+  color: white;
+  background: #070b19;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  resize: vertical;
+}
+
+#result {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.7;
+}
+
+footer {
+  padding: 25px 5%;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  text-align: center;
+  font-size: 13px;
+}
+
+.hidden { display: none !important; }
+
+@media (max-width: 850px) {
+  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  nav { gap: 12px; }
+}
+
+@media (max-width: 520px) {
+  header { padding: 13px 5%; }
+  .logo { font-size: 20px; }
+  nav { gap: 12px; font-size: 12px; }
+  nav a:nth-child(3) { display: none; }
+  .hero { padding: 57px 0 48px; }
+  h1 { letter-spacing: -1px; }
+  .grid { grid-template-columns: 1fr; }
+  .card p { min-height: auto; }
+  .section-heading h2 { font-size: 23px; }
+  .panel { padding: 18px; }
+  .prompt input { font-size: 13px; }
+  .primary { padding: 11px 14px; }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <a class="logo" href="#">✦ Nexora <span>AI</span></a>
+  <nav>
+    <a href="#">Home</a>
+    <a href="#tools">AI Tools</a>
+    <a href="#about">About</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="container">
+    <span class="badge">✦ YOUR AI WORKSPACE</span>
+    <h1>One Platform.<br><span class="gradient">Limitless Possibilities.</span></h1>
+    <p>
+      Explore a smarter way to write, learn, translate, research and code.
+      Your journey into AI starts here.
+    </p>
+
+    <form class="prompt" id="promptForm">
+      <input id="promptInput" placeholder="What would you like help with?" aria-label="Describe your task">
+      <button class="primary" type="submit">Explore →</button>
+    </form>
+  </div>
+</section>
+
+<main class="container">
+  <section class="section" id="tools">
+    <div class="section-heading">
+      <div>
+        <h2>✦ Explore AI Tools</h2>
+        <p>Find the right tool for your next idea.</p>
+      </div>
+    </div>
+
+    <input class="search" id="search" placeholder="🔎 Search AI tools..." aria-label="Search AI tools">
+
+    <div class="grid" id="toolGrid">
+
+      <article class="card" data-name="chat chatbot questions answers">
+        <div class="icon">💬</div>
+        <h3>AI Chatbot</h3>
+        <p>Ask questions and explore ideas with an AI assistant.</p>
+        <button data-tool="Chatbot">Open tool →</button>
+      </article>
+
+      <article class="card" data-name="writer writing essay email article">
+        <div class="icon">✍️</div>
+        <h3>AI Writer</h3>
+        <p>Plan essays, articles, stories and professional emails.</p>
+        <button data-tool="Writer">Open tool →</button>
+      </article>
+
+      <article class="card" data-name="summarizer summary notes text">
+        <div class="icon">📝</div>
+        <h3>AI Summarizer</h3>
+        <p>Turn lengthy text into concise, readable notes.</p>
+        <button data-tool="Summarizer">Open tool →</button>
+      </article>
+
+      <article class="card" data-name="translator translation languages">
+        <div class="icon">🌐</div>
+        <h3>AI Translator</h3>
+        <p>Prepare text for translation into another language.</p>
+        <button data-tool="Translator">Open tool →</button>
+      </article>
+
+      <article class="card" data-name="coding programming javascript python code">
+        <div class="icon">💻</div>
+        <h3>AI Coding Assistant</h3>
+        <p>Learn programming and understand code concepts.</p>
+        <button data-tool="Coding Assistant">Open tool →</button>
+      </article>
+
+      <article class="card" data-name="study student learning quiz">
+        <div class="icon">🎓</div>
+        <h3>AI Study Assistant</h3>
+        <p>Explore topics and prepare practice questions.</p>
+        <button data-tool="Study Assistant">Open tool →</button>
+      </article>
+
+      <article class="card" data-name="document pdf file analysis">
+        <div class="icon">📄</div>
+        <h3>AI Document Assistant</h3>
+        <p>Prepare questions about documents and notes.</p>
+        <button data-tool="Document Assistant">Open tool →</button>
+      </article>
+
+      <article class="card" data-name="research information explore">
+        <div class="icon">🔎</div>
+        <h3>AI Research Assistant</h3>
+        <p>Organize research questions and explore subjects.</p>
+        <button data-tool="Research Assistant">Open tool →</button>
+      </article>
+
+    </div>
+  </section>
+
+  <section class="panel hidden" id="toolArea">
+    <h2 id="toolTitle">AI Assistant</h2>
+    <p id="toolDescription">Describe what you need help with.</p>
+
+    <form id="taskForm">
+      <textarea id="taskInput" placeholder="Enter your text or question here..." required></textarea>
+      <button class="primary" type="submit">Prepare task →</button>
+    </form>
+
+    <div id="result" aria-live="polite"></div>
+  </section>
+
+  <section class="panel" id="about">
+    <h2>✨ Meet Nexora AI</h2>
+    <p>
+      Nexora AI brings useful AI tools together in one place.
+      Our goal is to make learning, creativity and technology more accessible.
+    </p>
+    <p><strong>Built for curious minds. Designed for everyone.</strong></p>
+    <p>Website version 1.0 · More features coming soon.</p>
+  </section>
+</main>
+
+<footer>
+  <strong>Nexora AI</strong> — One Platform. Limitless Possibilities.
+  <br><br>
+  A growing project built for learners, creators and curious minds.
+</footer>
+
+<script>
+const descriptions = {
+  "Chatbot": "Write your question or describe the problem you want to solve.",
+  "Writer": "Describe the article, essay, story or email you want to create.",
+  "Summarizer": "Paste the text you want to summarize.",
+  "Translator": "Enter text and specify the language you want to translate it into.",
+  "Coding Assistant": "Describe your coding problem or paste the code you want explained.",
+  "Study Assistant": "Enter a topic you want explained or studied.",
+  "Document Assistant": "Paste text from a document and describe what you want to understand.",
+  "Research Assistant": "Describe the topic you want to research."
+};
+
+let currentTool = "Chatbot";
+
+function openTool(name, initialText = "") {
+  currentTool = name;
+  document.getElementById("toolTitle").textContent = "✦ AI " + name;
+  document.getElementById("toolDescription").textContent =
+    descriptions[name] || "Describe your task.";
+  document.getElementById("taskInput").value = initialText;
+  document.getElementById("result").textContent = "";
+  document.getElementById("toolArea").classList.remove("hidden");
+  document.getElementById("toolArea").scrollIntoView({behavior:"smooth"});
+}
+
+document.querySelectorAll("[data-tool]").forEach(button => {
+  button.addEventListener("click", () => openTool(button.dataset.tool));
+});
+
+document.getElementById("search").addEventListener("input", event => {
+  const query = event.target.value.toLowerCase();
+  document.querySelectorAll("#toolGrid .card").forEach(card => {
+    card.classList.toggle("hidden", !card.dataset.name.includes(query));
+  });
+});
+
+document.getElementById("promptForm").addEventListener("submit", event => {
+  event.preventDefault();
+  const value = document.getElementById("promptInput").value.trim();
+  if (!value) {
+    document.getElementById("promptInput").focus();
+    return;
+  }
+  openTool("Chatbot", value);
+});
+
+document.getElementById("taskForm").addEventListener("submit", event => {
+  event.preventDefault();
+  const input = document.getElementById("taskInput").value.trim();
+  if (!input) return;
+
+  document.getElementById("result").textContent =
+    "Your task has been prepared, but live AI is not connected yet.\n\n" +
+    "Selected tool: " + currentTool +
+    "\n\nYour input:\n" + input +
+    "\n\nNext step: connect a real AI model securely so Nexora AI can generate answers.";
+
+});
+</script>
+
+</body>
+</html>
