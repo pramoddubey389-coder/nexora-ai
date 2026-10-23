@@ -472,17 +472,44 @@ document.getElementById("promptForm").addEventListener("submit", event => {
   openTool("Chatbot", value);
 });
 
-document.getElementById("taskForm").addEventListener("submit", event => {
+document.getElementById("taskForm").addEventListener("submit", async (event) => {
   event.preventDefault();
+
   const input = document.getElementById("taskInput").value.trim();
-  if (!input) return;
+  const result = document.getElementById("result");
 
-  document.getElementById("result").textContent =
-    "Your task has been prepared, but live AI is not connected yet.\n\n" +
-    "Selected tool: " + currentTool +
-    "\n\nYour input:\n" + input +
-    "\n\nNext step: connect a real AI model securely so Nexora AI can generate answers.";
+  if (!input) {
+    result.textContent = "Please enter your message first.";
+    return;
+  }
 
+  result.textContent = "Nexora AI is thinking...";
+
+  try {
+    const response = await fetch(
+      "https://nexora-ai-api.pramoddubey389.workers.dev",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          prompt: "You are Nexora AI, a helpful AI assistant. Selected tool: " +
+            currentTool + ". User request: " + input
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "AI request failed.");
+    }
+
+    result.textContent = data.answer || "No answer received.";
+  } catch (error) {
+    result.textContent = "Error: " + error.message;
+  }
 });
 </script>
 
