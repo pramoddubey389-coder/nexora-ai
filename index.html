@@ -295,6 +295,16 @@ footer {
   .prompt input { font-size: 13px; }
   .primary { padding: 11px 14px; }
 }
+
+.auth-panel { margin: 20px auto; max-width: 680px; padding: 20px; border: 1px solid var(--border); border-radius: 16px; background: var(--panel); }
+.auth-panel h2 { margin-top: 0; }
+.auth-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.auth-panel input { width: 100%; min-width: 0; padding: 12px; margin: 6px 0; color: white; background: #070b19; border: 1px solid var(--border); border-radius: 10px; }
+.auth-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.auth-status { color: var(--muted); font-size: 14px; overflow-wrap: anywhere; }
+#authStatus { white-space: pre-wrap; }
+@media (max-width: 520px) { .auth-row { grid-template-columns: 1fr; } }
+
 </style>
 </head>
 
@@ -308,6 +318,22 @@ footer {
     <a href="#about">About</a>
   </nav>
 </header>
+
+<section class="container auth-panel" id="authPanel">
+  <h2>✦ Nexora AI Account</h2>
+  <p class="auth-status">Sign in or create a free account to use AI tools.</p>
+  <div class="auth-row">
+    <input id="authEmail" type="email" autocomplete="email" placeholder="Email address" aria-label="Email address">
+    <input id="authPassword" type="password" autocomplete="current-password" minlength="8" placeholder="Password (at least 8 characters)" aria-label="Password">
+  </div>
+  <div class="auth-actions">
+    <button class="primary" id="signInBtn" type="button">Sign in</button>
+    <button class="primary" id="signUpBtn" type="button">Create account</button>
+    <button class="primary hidden" id="signOutBtn" type="button">Sign out</button>
+  </div>
+  <p class="auth-status" id="authStatus" aria-live="polite">Not signed in.</p>
+</section>
+
 
 <section class="hero">
   <div class="container">
@@ -430,6 +456,197 @@ footer {
 const descriptions = {
   "Chatbot": "Write your question or describe the problem you want to solve.",
   "Writer": "Describe the article, essay, story or email you want to create.",
+  "Summarizer": "Paste the text you want to summarize.",
+  "Translator": "Enter text and specify the language you want to translate it into.",
+  "Coding Assistant": "Describe your coding problem or paste the code you want explained.",
+  "Study Assistant": "Enter a topic you want explained or studied.",
+  "Document Assistant": "Paste text from a document and describe what you want to understand.",
+  "Research Assistant": "Describe the topic you want to research."
+};
+
+let currentTool = "Chatbot";
+
+function openTool(name, initialText = "") {
+  currentTool = name;
+  document.getElementById("toolTitle").textContent = "✦ AI " + name;
+  document.getElementById("toolDescription").textContent =
+    descriptions[name] || "Describe your task.";
+  document.getElementById("taskInput").value = initialText;
+  document.getElementById("result").textContent = "";
+  document.getElementById("toolArea").classList.remove("hidden");
+  document.getElementById("toolArea").scrollIntoView({behavior:"smooth"});
+}
+
+document.querySelectorAll("[data-tool]").forEach(button => {
+  button.addEventListener("click", () => openTool(button.dataset.tool));
+});
+
+document.getElementById("search").addEventListener("input", event => {
+  const query = event.target.value.toLowerCase();
+  document.querySelectorAll("#toolGrid .card").forEach(card => {
+    card.classList.toggle("hidden", !card.dataset.name.includes(query));
+  });
+});
+
+document.getElementById("promptForm").addEventListener("submit", event => {
+  event.preventDefault();
+  const value = document.getElementById("promptInput").value.trim();
+  if (!value) {
+    document.getElementById("promptInput").focus();
+    return;
+  }
+  openTool("Chatbot", value);
+});
+
+document.getElementById("taskForm").addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const input = document.getElementById("taskInput").value.trim();
+  const result = document.getElementById("result");
+
+  if (!input) {
+    result.textContent = "Please enter your message first.";
+    return;
+  }
+
+  if (!nexoraSupabase || !nexoraSession || !nexoraSession.access_token) {
+    result.textContent = "Please sign in above before using Nexora AI.";
+    document.getElementById("authPanel").scrollIntoView({ behavior: "smooth" });
+    return;
+  }
+
+  result.textContent = "Nexora AI is thinking...";
+
+  try {
+    const response = await fetch(
+      "https://nexora-ai-api.pramoddubey389.workers.dev",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + nexoraSession.access_token
+        },
+        body: JSON.stringify({
+          prompt: "You are Nexora AI, a helpful AI assistant. Selected tool: " +
+            currentTool + ". User request: " + input
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "AI request failed.");
+    }
+
+    result.textContent = data.answer || "No answer received.";
+  } catch (error) {
+    result.textContent = "Error: " + error.message;
+  }
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+/*
+  Nexora AI Supabase setup:
+  Replace both placeholder strings with your Supabase Project URL and Publishable key.
+  Never put a secret/service_role key here.
+*/
+const SUPABASE_URL = "https://YOUR-PROJECT-ID.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Q1h7SFLGaM25uy8ic55SMg_XdVegHAQ";
+
+let nexoraSupabase = null;
+let nexoraSession = null;
+
+const authStatus = document.getElementById("authStatus");
+const signInBtn = document.getElementById("signInBtn");
+const signUpBtn = document.getElementById("signUpBtn");
+const signOutBtn = document.getElementById("signOutBtn");
+
+function updateAuthUI(session) {
+  nexoraSession = session || null;
+  const signedIn = Boolean(session && session.access_token);
+  signInBtn.classList.toggle("hidden", signedIn);
+  signUpBtn.classList.toggle("hidden", signedIn);
+  signOutBtn.classList.toggle("hidden", !signedIn);
+  authStatus.textContent = signedIn
+    ? "Signed in as " + (session.user.email || "your account") + "."
+    : "Not signed in. Sign in or create an account to use AI tools.";
+}
+
+function authConfigReady() {
+  if (!window.supabase || SUPABASE_URL.includes("PASTE_") || SUPABASE_PUBLISHABLE_KEY.includes("PASTE_")) {
+    authStatus.textContent = "Setup needed: add your Supabase Project URL and Publishable key in index.html.";
+    return false;
+  }
+  return true;
+}
+
+if (authConfigReady()) {
+  nexoraSupabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+  nexoraSupabase.auth.getSession().then(({ data, error }) => {
+    if (error) authStatus.textContent = "Could not check session: " + error.message;
+    updateAuthUI(data ? data.session : null);
+  });
+  nexoraSupabase.auth.onAuthStateChange((_event, session) => updateAuthUI(session));
+}
+
+signUpBtn.addEventListener("click", async () => {
+  if (!authConfigReady() || !nexoraSupabase) return;
+  const email = document.getElementById("authEmail").value.trim();
+  const password = document.getElementById("authPassword").value;
+  if (!email || password.length < 8) {
+    authStatus.textContent = "Enter a valid email and a password of at least 8 characters.";
+    return;
+  }
+  signUpBtn.disabled = true;
+  authStatus.textContent = "Creating account...";
+  const { data, error } = await nexoraSupabase.auth.signUp({ email, password });
+  signUpBtn.disabled = false;
+  if (error) {
+    authStatus.textContent = "Sign-up failed: " + error.message;
+    return;
+  }
+  if (data.session) {
+    authStatus.textContent = "Account created and signed in.";
+    updateAuthUI(data.session);
+  } else {
+    authStatus.textContent = "Account created. Check your email for the confirmation link, then sign in.";
+  }
+});
+
+signInBtn.addEventListener("click", async () => {
+  if (!authConfigReady() || !nexoraSupabase) return;
+  const email = document.getElementById("authEmail").value.trim();
+  const password = document.getElementById("authPassword").value;
+  if (!email || !password) {
+    authStatus.textContent = "Enter your email and password.";
+    return;
+  }
+  signInBtn.disabled = true;
+  authStatus.textContent = "Signing in...";
+  const { data, error } = await nexoraSupabase.auth.signInWithPassword({ email, password });
+  signInBtn.disabled = false;
+  if (error) {
+    authStatus.textContent = "Sign-in failed: " + error.message;
+    return;
+  }
+  updateAuthUI(data.session);
+  authStatus.textContent = "Signed in successfully.";
+});
+
+signOutBtn.addEventListener("click", async () => {
+  if (!nexoraSupabase) return;
+  const { error } = await nexoraSupabase.auth.signOut();
+  if (error) authStatus.textContent = "Sign-out failed: " + error.message;
+  else updateAuthUI(null);
+});
+</script>
+
+</body>
+</html>
+ or email you want to create.",
   "Summarizer": "Paste the text you want to summarize.",
   "Translator": "Enter text and specify the language you want to translate it into.",
   "Coding Assistant": "Describe your coding problem or paste the code you want explained.",
