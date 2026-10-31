@@ -2,64 +2,74 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
   <meta name="theme-color" content="#090b18">
   <title>Nexora AI — One platform. Limitless possibilities.</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root{--bg:#090b18;--panel:#11152a;--panel2:#171c35;--line:#272d4a;--text:#f4f5ff;--muted:#9ba3c4;--accent:#8b5cf6;--accent2:#4f8cff;--good:#35c995;--danger:#ff647c}
-    *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 20% 0%,#211747 0,transparent 38%),radial-gradient(ellipse at 90% 15%,#10254b 0,transparent 32%),var(--bg);color:var(--text);font:15px/1.5 Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh}
-    button,input,textarea{font:inherit}button{cursor:pointer} .hidden{display:none!important}
-    .topbar{height:68px;border-bottom:1px solid #ffffff12;background:#090b18cc;backdrop-filter:blur(16px);display:flex;align-items:center;justify-content:space-between;padding:0 22px;position:sticky;top:0;z-index:10}
-    .brand{font-size:21px;font-weight:800;letter-spacing:-.7px}.brand span{background:linear-gradient(100deg,#b794ff,#64b5ff);-webkit-background-clip:text;background-clip:text;color:transparent}.brand small{display:block;color:var(--muted);font-size:10px;font-weight:500;letter-spacing:1.7px;text-transform:uppercase;margin-top:-3px}
-    .top-actions{display:flex;gap:9px;align-items:center}.user-label{color:var(--muted);font-size:12px;max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .btn{border:1px solid var(--line);background:var(--panel2);color:var(--text);padding:10px 14px;border-radius:11px;font-weight:650}.btn:hover{border-color:#7860c7}.btn.primary{background:linear-gradient(110deg,#8054e8,#477fe9);border:0}.btn.danger{color:#ff9bab}.btn:disabled{opacity:.45;cursor:not-allowed}
-    .layout{max-width:1440px;margin:auto;padding:22px;display:grid;grid-template-columns:260px minmax(0,1fr);gap:20px;min-height:calc(100vh - 68px)}
-    .sidebar,.main-card,.auth-card,.stat{background:#11152add;border:1px solid var(--line);border-radius:18px;box-shadow:0 18px 55px #0002}
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    html,body{margin:0;padding:0;overflow-x:hidden;background:radial-gradient(ellipse at 20% 0%,#211747 0,transparent 38%),radial-gradient(ellipse at 90% 15%,#10254b 0,transparent 32%),var(--bg);color:var(--text);font:15px/1.5 Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh}
+    button,input,textarea{font:inherit}button{cursor:pointer;transition:all .18s ease}.hidden{display:none!important}
+    .topbar{height:68px;border-bottom:1px solid #ffffff14;background:#090b18d9;backdrop-filter:blur(16px);display:flex;align-items:center;justify-content:space-between;padding:0 22px;position:sticky;top:0;z-index:30}
+    .brand{font-size:21px;font-weight:800;letter-spacing:-.6px}.brand span{background:linear-gradient(100deg,#b794ff,#64b5ff);-webkit-background-clip:text;background-clip:text;color:transparent}.brand small{display:block;color:var(--muted);font-size:10px;font-weight:600;letter-spacing:1.6px;text-transform:uppercase;margin-top:-3px}
+    .top-actions{display:flex;gap:10px;align-items:center}.user-label{color:var(--muted);font-size:12px;max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:#151a33;border:1px solid var(--line);padding:5px 10px;border-radius:20px}
+    .btn{border:1px solid var(--line);background:var(--panel2);color:var(--text);padding:10px 14px;border-radius:11px;font-weight:650;font-size:14px}.btn:hover:not(:disabled){border-color:#7860c7;background:#1f2547}.btn.primary{background:linear-gradient(110deg,#8054e8,#477fe9);border:0;color:#fff;box-shadow:0 4px 18px #6d4aff33}.btn.danger{color:#ff9bab;border-color:#582839;background:#281524}.btn:disabled{opacity:.48;cursor:not-allowed}
+    .layout{max-width:1440px;margin:0 auto;padding:22px;display:grid;grid-template-columns:265px minmax(0,1fr);gap:20px;min-height:calc(100vh - 68px)}
+    .sidebar,.main-card,.auth-card,.stat,.dash-panel{background:#11152add;border:1px solid var(--line);border-radius:18px;box-shadow:0 18px 55px #00000035}
     .sidebar{padding:15px;height:calc(100vh - 110px);position:sticky;top:88px;display:flex;flex-direction:column;min-height:450px}
-    .side-head{display:flex;justify-content:space-between;align-items:center;margin:2px 0 15px}.section-label{font-size:11px;color:var(--muted);letter-spacing:1.2px;text-transform:uppercase;font-weight:750}
-    .nav-btn{width:100%;text-align:left;padding:11px 12px;border:1px solid transparent;border-radius:10px;background:transparent;color:#cbd0e8;margin:3px 0;font-weight:650}.nav-btn.active,.nav-btn:hover{background:#292044;border-color:#49376d;color:white}
-    .history-head{display:flex;justify-content:space-between;align-items:center;margin:22px 2px 8px}.history-list{overflow:auto;flex:1}.history-item{display:flex;gap:8px;align-items:center;width:100%;text-align:left;padding:10px;border:0;border-radius:9px;background:transparent;color:#b8bfdc;margin:2px 0}.history-item:hover,.history-item.active{background:#202642;color:white}.history-title{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;font-size:13px}.empty-note{color:#77809f;font-size:12px;padding:10px}
-    .sidebar-bottom{border-top:1px solid var(--line);padding-top:12px;margin-top:12px}.main{min-width:0}.hero{padding:25px 4px 20px}.eyebrow{color:#b7a1ff;text-transform:uppercase;letter-spacing:2px;font-size:11px;font-weight:800}.hero h1{font-size:clamp(28px,5vw,44px);line-height:1.08;letter-spacing:-1.7px;margin:8px 0}.gradient{background:linear-gradient(100deg,#c2a5ff,#79c6ff);-webkit-background-clip:text;background-clip:text;color:transparent}.hero p{color:var(--muted);max-width:650px;margin:10px 0 0}
-    .main-card{padding:20px}.tools{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:9px;margin-bottom:18px}.tool{background:#171c35;border:1px solid var(--line);border-radius:12px;color:#cbd1ee;padding:12px 8px;font-size:12px;font-weight:700;min-height:72px}.tool .ico{display:block;font-size:19px;margin-bottom:5px}.tool.active{border-color:#9570fa;background:#30234d;color:white;box-shadow:0 0 0 1px #9570fa44}
-    .workspace-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:4px 0 12px}.workspace-title h2{font-size:18px;margin:0}.badge{border:1px solid #3c3564;color:#c5b5ff;background:#211a3c;border-radius:30px;padding:4px 10px;font-size:11px}
-    .messages{min-height:220px;max-height:52vh;overflow:auto;padding:12px 2px;display:flex;flex-direction:column;gap:12px}.welcome{margin:auto;text-align:center;color:var(--muted);max-width:430px;padding:30px 10px}.welcome .spark{font-size:32px}.welcome h3{color:#eef0ff;margin:7px 0}.bubble{max-width:88%;padding:12px 14px;border-radius:14px;white-space:pre-wrap;overflow-wrap:anywhere}.bubble.user{align-self:flex-end;background:linear-gradient(120deg,#6947bd,#3e66bb);color:white;border-bottom-right-radius:4px}.bubble.assistant{align-self:flex-start;background:#1a2039;border:1px solid #303958;border-bottom-left-radius:4px}.bubble .role{display:block;font-size:10px;opacity:.7;margin-bottom:5px;text-transform:uppercase;letter-spacing:1px;font-weight:800}
-    .composer{border:1px solid #343b5d;background:#0d1122;border-radius:15px;padding:10px}.composer textarea{width:100%;resize:vertical;min-height:100px;max-height:240px;background:transparent;border:0;outline:0;color:white;padding:8px;font-size:15px}.composer-bottom{display:flex;justify-content:space-between;align-items:center;gap:10px}.hint{color:#7e88a9;font-size:11px}.composer-actions{display:flex;gap:8px}
+    .side-head{display:flex;justify-content:space-between;align-items:center;margin:2px 0 14px}.section-label{font-size:11px;color:var(--muted);letter-spacing:1.2px;text-transform:uppercase;font-weight:750}
+    .nav-btn{width:100%;text-align:left;padding:11px 12px;border:1px solid transparent;border-radius:10px;background:transparent;color:#cbd0e8;margin:3px 0;font-weight:650}.nav-btn.active,.nav-btn:hover{background:#292044;border-color:#49376d;color:#fff}
+    .history-head{display:flex;justify-content:space-between;align-items:center;margin:20px 2px 8px}.history-list{overflow-y:auto;flex:1}
+    .history-item{display:flex;gap:8px;align-items:center;width:100%;text-align:left;padding:9px 10px;border:1px solid transparent;border-radius:9px;background:transparent;color:#b8bfdc;margin:2px 0;cursor:pointer}.history-item:hover,.history-item.active{background:#202642;border-color:#343d66;color:#fff}
+    .history-info{flex:1;min-width:0}.history-title{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;font-weight:600}.history-meta{display:block;font-size:10px;color:var(--muted)}
+    .del-btn{border:0;background:transparent;color:#8992b3;padding:4px 7px;border-radius:7px;font-size:13px}.del-btn:hover{background:#3b2032;color:var(--danger)}
+    .empty-note{color:#77809f;font-size:12px;padding:10px;text-align:center}.sidebar-bottom{border-top:1px solid var(--line);padding-top:12px;margin-top:12px}
+    .main{min-width:0}.hero{padding:18px 4px}.eyebrow{color:#b7a1ff;text-transform:uppercase;letter-spacing:2px;font-size:11px;font-weight:800}.hero h1{font-size:clamp(26px,4.5vw,42px);line-height:1.1;letter-spacing:-1.4px;margin:8px 0}.gradient{background:linear-gradient(100deg,#c2a5ff,#79c6ff);-webkit-background-clip:text;background-clip:text;color:transparent}.hero p{color:var(--muted);max-width:650px;margin:8px 0 0}
+    .main-card{padding:20px}.tools{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:9px;margin-bottom:18px}
+    .tool{background:#171c35;border:1px solid var(--line);border-radius:12px;color:#cbd1ee;padding:12px 8px;font-size:12px;font-weight:700;min-height:72px}.tool .ico{display:block;font-size:19px;margin-bottom:5px}.tool.active{border-color:#9570fa;background:#30234d;color:#fff;box-shadow:0 0 0 1px #9570fa44}
+    .workspace-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:4px 0 12px;flex-wrap:wrap}.workspace-title h2{font-size:18px;margin:0}.badge{border:1px solid #3c3564;color:#c5b5ff;background:#211a3c;border-radius:30px;padding:4px 10px;font-size:11px}
+    .messages{min-height:240px;max-height:52vh;overflow-y:auto;padding:12px 4px;display:flex;flex-direction:column;gap:12px}.welcome{margin:auto;text-align:center;color:var(--muted);max-width:430px;padding:30px 10px}.welcome .spark{font-size:32px}.welcome h3{color:#eef0ff;margin:7px 0}
+    .bubble{max-width:88%;padding:12px 14px;border-radius:14px;white-space:pre-wrap;overflow-wrap:anywhere}.bubble.user{align-self:flex-end;background:linear-gradient(120deg,#6947bd,#3e66bb);color:#fff;border-bottom-right-radius:4px}.bubble.assistant{align-self:flex-start;background:#1a2039;border:1px solid #303958;border-bottom-left-radius:4px}.bubble .role{display:block;font-size:10px;opacity:.75;margin-bottom:5px;text-transform:uppercase;letter-spacing:1px;font-weight:800}
+    .composer{border:1px solid #343b5d;background:#0d1122;border-radius:15px;padding:10px;margin-top:8px}.composer textarea{width:100%;resize:vertical;min-height:92px;max-height:240px;background:transparent;border:0;outline:0;color:#fff;padding:6px;font-size:15px}.composer-bottom{display:flex;justify-content:space-between;align-items:center;gap:10px}.hint{color:#7e88a9;font-size:11px}.composer-actions{display:flex;gap:8px}
     .status{min-height:20px;color:var(--muted);font-size:12px;margin:9px 2px 0}.status.error{color:#ff8295}.status.ok{color:#62ddb5}
-    .auth-wrap{max-width:520px;margin:60px auto;padding:0 16px}.auth-card{padding:28px}.auth-card h1{margin:0 0 8px;font-size:28px}.auth-card p{color:var(--muted);margin:0 0 20px}.field{margin:13px 0}.field label{display:block;color:#c7cce2;font-size:12px;margin-bottom:6px}.field input{width:100%;background:#0b1020;border:1px solid var(--line);border-radius:10px;padding:12px;color:white;outline:0}.field input:focus,.composer:focus-within{border-color:#9270ed}.auth-buttons{display:flex;gap:9px;flex-wrap:wrap}.auth-message{font-size:12px;color:var(--muted);margin-top:14px;min-height:18px}
+    .auth-wrap{max-width:500px;margin:50px auto;padding:0 16px}.auth-card{padding:28px}.auth-card h1{margin:6px 0 8px;font-size:28px}.auth-card p{color:var(--muted);margin:0 0 20px}.field{margin:13px 0}.field label{display:block;color:#c7cce2;font-size:12px;margin-bottom:6px}.field input{width:100%;background:#0b1020;border:1px solid var(--line);border-radius:10px;padding:12px;color:#fff;outline:0}.field input:focus,.composer:focus-within{border-color:#9270ed}
+    .auth-buttons{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}.auth-buttons .btn{flex:1;min-width:130px}.auth-message{font-size:13px;color:var(--muted);margin-top:14px;min-height:18px}.auth-message.error{color:#ff9bab}.auth-message.ok{color:#62ddb5}
     .dashboard{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:15px 0}.stat{padding:18px}.stat .num{font-size:30px;font-weight:800;margin-top:5px}.stat .desc{font-size:12px;color:var(--muted)}
-    .dash-panel{padding:20px;background:#11152add;border:1px solid var(--line);border-radius:16px;margin-top:14px}.dash-panel h3{margin:0 0 8px}.dash-panel p{color:var(--muted);margin:0}
+    .dash-panel{padding:20px;margin-top:14px}.dash-panel h3{margin:0 0 8px}.dash-panel p{color:var(--muted);margin:0}.recent-item{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:#171c35;border:1px solid var(--line);border-radius:10px;margin-top:8px;cursor:pointer}.recent-item:hover{border-color:#7860c7}
     footer{text-align:center;color:#697392;font-size:11px;padding:20px}
-    @media(max-width:900px){.layout{grid-template-columns:1fr;padding:14px}.sidebar{height:auto;min-height:0;position:static}.history-list{max-height:180px}.tools{grid-template-columns:repeat(3,1fr)}.hero{padding:20px 3px}.messages{max-height:48vh}}
-    @media(max-width:520px){.topbar{padding:0 13px;height:62px}.brand{font-size:18px}.user-label{display:none}.layout{padding:10px;gap:12px}.main-card{padding:13px}.tools{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.tool{min-height:67px;padding:9px 4px;font-size:11px}.bubble{max-width:95%}.dashboard{grid-template-columns:1fr}.stat{padding:14px}.composer-bottom{align-items:flex-end}.hint{max-width:125px}.auth-wrap{margin:30px auto}.auth-card{padding:20px}}
+    @media(max-width:900px){.layout{grid-template-columns:1fr;padding:14px}.sidebar{height:auto;min-height:0;position:static}.history-list{max-height:180px}.tools{grid-template-columns:repeat(3,1fr)}.messages{max-height:48vh}}
+    @media(max-width:520px){.topbar{padding:0 13px;height:62px}.brand{font-size:18px}.user-label{display:none}.layout{padding:10px;gap:12px}.main-card{padding:13px}.tools{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.tool{min-height:67px;padding:9px 4px;font-size:11px}.bubble{max-width:95%}.dashboard{grid-template-columns:1fr}.stat{padding:14px}.composer-bottom{flex-direction:column;align-items:stretch}.composer-actions{justify-content:flex-end}.auth-wrap{margin:26px auto}.auth-card{padding:20px}}
   </style>
 </head>
 <body>
   <header class="topbar">
     <div class="brand">✦ <span>Nexora AI</span><small>Think · Create · Learn</small></div>
-    <div class="top-actions"><span id="userLabel" class="user-label"></span><button id="headerAuthBtn" class="btn">Sign in</button></div>
+    <div class="top-actions"><span id="userLabel" class="user-label hidden"></span><button id="headerAuthBtn" class="btn" type="button">Sign in</button></div>
   </header>
 
   <section id="authView" class="auth-wrap">
     <div class="auth-card">
       <div class="eyebrow">Your AI workspace</div>
       <h1>Welcome to <span class="gradient">Nexora AI</span></h1>
-      <p>Sign in to access your AI tools and saved conversations.</p>
-      <div class="field"><label for="email">Email address</label><input id="email" type="email" autocomplete="email" placeholder="you@example.com"></div>
-      <div class="field"><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" placeholder="Enter your password"></div>
-      <div class="auth-buttons"><button id="signInBtn" class="btn primary">Sign in</button><button id="signUpBtn" class="btn">Create account</button></div>
+      <p>Sign in or create an account to access your AI tools and saved conversations.</p>
+      <form id="authForm" novalidate>
+        <div class="field"><label for="email">Email address</label><input id="email" type="email" autocomplete="email" placeholder="you@example.com" required></div>
+        <div class="field"><label for="password">Password (min 6 characters)</label><input id="password" type="password" autocomplete="current-password" placeholder="Enter your password" required></div>
+        <div class="auth-buttons"><button id="signInBtn" class="btn primary" type="submit">Sign in</button><button id="signUpBtn" class="btn" type="button">Create account</button></div>
+      </form>
       <div id="authMessage" class="auth-message"></div>
     </div>
   </section>
 
   <div id="appView" class="layout hidden">
     <aside class="sidebar">
-      <div class="side-head"><span class="section-label">Workspace</span><button id="newChatBtn" class="btn primary" style="padding:7px 10px">＋ New</button></div>
-      <button class="nav-btn active" data-view="chat">✦ &nbsp; AI Workspace</button>
-      <button class="nav-btn" data-view="dashboard">▦ &nbsp; Dashboard</button>
+      <div class="side-head"><span class="section-label">Workspace</span><button id="newChatBtn" class="btn primary" type="button" style="padding:7px 10px;font-size:12px">＋ New</button></div>
+      <button class="nav-btn active" type="button" data-view="chat">✦ &nbsp; AI Workspace</button>
+      <button class="nav-btn" type="button" data-view="dashboard">▦ &nbsp; Dashboard</button>
       <div class="history-head"><span class="section-label">Recent chats</span><span id="chatCount" class="section-label">0</span></div>
       <div id="historyList" class="history-list"><div class="empty-note">Your saved chats will appear here.</div></div>
-      <div class="sidebar-bottom"><button id="sideSignOutBtn" class="nav-btn">↪ &nbsp; Sign out</button></div>
+      <div class="sidebar-bottom"><button id="sideSignOutBtn" class="nav-btn" type="button">↪ &nbsp; Sign out</button></div>
     </aside>
 
     <main class="main">
@@ -67,18 +77,21 @@
         <div class="hero"><div class="eyebrow">AI for every possibility</div><h1>One platform.<br><span class="gradient">Limitless possibilities.</span></h1><p>Ask questions, create content, understand difficult topics and build your coding skills — all in one place.</p></div>
         <div class="main-card">
           <div class="tools">
-            <button class="tool active" data-tool="chat"><span class="ico">✧</span>AI Chat</button>
-            <button class="tool" data-tool="writer"><span class="ico">✎</span>AI Writer</button>
-            <button class="tool" data-tool="summarizer"><span class="ico">▤</span>Summarizer</button>
-            <button class="tool" data-tool="translator"><span class="ico">文</span>Translator</button>
-            <button class="tool" data-tool="study"><span class="ico">⌘</span>Study Assistant</button>
-            <button class="tool" data-tool="coding"><span class="ico">‹/›</span>Coding Help</button>
+            <button class="tool active" type="button" data-tool="chat"><span class="ico">✧</span>AI Chat</button>
+            <button class="tool" type="button" data-tool="writer"><span class="ico">✎</span>AI Writer</button>
+            <button class="tool" type="button" data-tool="summarizer"><span class="ico">▤</span>Summarizer</button>
+            <button class="tool" type="button" data-tool="translator"><span class="ico">文</span>Translator</button>
+            <button class="tool" type="button" data-tool="study"><span class="ico">⌘</span>Study Assistant</button>
+            <button class="tool" type="button" data-tool="coding"><span class="ico">‹/›</span>Coding Help</button>
           </div>
-          <div class="workspace-title"><h2 id="workspaceHeading">AI Chat</h2><span class="badge">● AI ready</span></div>
+          <div class="workspace-title">
+            <div style="display:flex;align-items:center;gap:10px"><h2 id="workspaceHeading">AI Chat</h2><span id="conversationBadge" class="badge">● AI ready</span></div>
+            <button id="deleteCurrentBtn" class="btn danger hidden" type="button" style="padding:6px 10px;font-size:12px">Delete Chat</button>
+          </div>
           <div id="messages" class="messages"><div class="welcome"><div class="spark">✦</div><h3>What would you like to explore?</h3><div>Choose a tool and enter your prompt below to get started.</div></div></div>
           <div class="composer">
             <textarea id="promptInput" maxlength="12000" placeholder="Message Nexora AI..."></textarea>
-            <div class="composer-bottom"><span class="hint">Enter to send · Shift + Enter for a new line</span><div class="composer-actions"><button id="clearBtn" class="btn">Clear</button><button id="sendBtn" class="btn primary">Generate ↗</button></div></div>
+            <div class="composer-bottom"><span class="hint">Enter to send · Shift + Enter for new line</span><div class="composer-actions"><button id="clearBtn" class="btn" type="button">Clear</button><button id="sendBtn" class="btn primary" type="button">Generate ↗</button></div></div>
           </div>
           <div id="status" class="status">Your conversations are saved to your account.</div>
         </div>
@@ -87,15 +100,16 @@
       <section id="dashboardView" class="hidden">
         <div class="hero"><div class="eyebrow">Your account</div><h1>Your <span class="gradient">Dashboard</span></h1><p>A quick overview of your Nexora AI activity.</p></div>
         <div class="dashboard">
-          <div class="stat"><div class="section-label">Saved conversations</div><div id="statChats" class="num">—</div><div class="desc">Chats in your account</div></div>
-          <div class="stat"><div class="section-label">Messages</div><div id="statMessages" class="num">—</div><div class="desc">Messages saved</div></div>
+          <div class="stat"><div class="section-label">Saved conversations</div><div id="statChats" class="num">0</div><div class="desc">Chats in your account</div></div>
+          <div class="stat"><div class="section-label">Messages</div><div id="statMessages" class="num">0</div><div class="desc">Messages saved</div></div>
           <div class="stat"><div class="section-label">AI tools</div><div class="num">6</div><div class="desc">Available in your workspace</div></div>
         </div>
         <div class="dash-panel"><h3>Account details</h3><p id="accountEmail">Loading account…</p></div>
+        <div class="dash-panel"><h3>Recent activity</h3><div id="recentActivityList"><p>Loading recent conversations…</p></div></div>
         <div class="dash-panel"><h3>Your privacy</h3><p>Your conversations are protected by Supabase Row Level Security. Your account can access only its own saved conversations.</p></div>
-        <button id="backToChatBtn" class="btn primary" style="margin-top:15px">Open AI Workspace</button>
+        <button id="backToChatBtn" class="btn primary" type="button" style="margin-top:15px">Open AI Workspace</button>
       </section>
-      <footer>Nexora AI · Built for learning and creativity</footer>
+      <footer>Nexora AI (Future Oryqentra) · Built for learning and creativity</footer>
     </main>
   </div>
 
@@ -107,72 +121,271 @@
   const AI_API_URL = "https://nexora-ai-api.pramoddubey389.workers.dev";
   const TOOL_NAMES = {chat:"AI Chat",writer:"AI Writer",summarizer:"Summarizer",translator:"Translator",study:"Study Assistant",coding:"Coding Help"};
   const $ = id => document.getElementById(id);
-  let supabaseClient, session=null, currentTool="chat", currentConversationId=null, sending=false;
-  const authView=$("authView"), appView=$("appView"), messagesEl=$("messages"), statusEl=$("status");
+  let supabaseClient = null, session = null, currentTool = "chat", currentConversationId = null, sending = false, authBusy = false;
+  const authView = $("authView"), appView = $("appView"), messagesEl = $("messages"), statusEl = $("status");
 
-  function setStatus(message,type=""){statusEl.textContent=message;statusEl.className="status "+type;}
-  function authMessage(message){$("authMessage").textContent=message;}
-  function safeText(value){return String(value ?? "");}
-  function showAuth(){authView.classList.remove("hidden");appView.classList.add("hidden");$("userLabel").textContent="";$("headerAuthBtn").textContent="Sign in";}
-  function showApp(){authView.classList.add("hidden");appView.classList.remove("hidden");$("userLabel").textContent=session?.user?.email||"";$("headerAuthBtn").textContent="Sign out";}
-  function addBubble(role,content){const box=document.createElement("div");box.className="bubble "+(role==="user"?"user":"assistant");const label=document.createElement("span");label.className="role";label.textContent=role==="user"?"You":"Nexora AI";const body=document.createElement("div");body.textContent=safeText(content);box.append(label,body);messagesEl.appendChild(box);messagesEl.scrollTop=messagesEl.scrollHeight;}
-  function showWelcome(){messagesEl.innerHTML='<div class="welcome"><div class="spark">✦</div><h3>What would you like to explore?</h3><div>Choose a tool and enter your prompt below to get started.</div></div>';}
-  function setTool(tool){if(!TOOL_NAMES[tool])return;currentTool=tool;document.querySelectorAll(".tool").forEach(b=>b.classList.toggle("active",b.dataset.tool===tool));$("workspaceHeading").textContent=TOOL_NAMES[tool];}
-  function showView(view){$("chatView").classList.toggle("hidden",view!=="chat");$("dashboardView").classList.toggle("hidden",view!=="dashboard");document.querySelectorAll(".nav-btn[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===view));if(view==="dashboard")loadDashboard();}
-  async function loadHistory(){
-    const {data,error}=await supabaseClient.from("conversations").select("id,title,tool,updated_at").order("updated_at",{ascending:false}).limit(50);
-    if(error){$("historyList").innerHTML='<div class="empty-note">Could not load chat history.</div>';return;}
-    $("chatCount").textContent=String(data.length);
-    $("historyList").innerHTML="";
-    if(!data.length){$("historyList").innerHTML='<div class="empty-note">Your saved chats will appear here.</div>';return;}
-    data.forEach(chat=>{const b=document.createElement("button");b.className="history-item"+(chat.id===currentConversationId?" active":"");const title=document.createElement("span");title.className="history-title";title.textContent=chat.title||"New chat";const del=document.createElement("span");del.textContent="⋯";del.title="Delete conversation";del.style.cssText="padding:0 4px;color:#8992b3";del.addEventListener("click",e=>{e.stopPropagation();deleteConversation(chat.id);});b.append(title,del);b.addEventListener("click",()=>openConversation(chat));$("historyList").appendChild(b);});
+  function setStatus(msg, type = "") { statusEl.textContent = msg; statusEl.className = "status" + (type ? " " + type : ""); }
+  function setAuthMessage(msg, type = "") { const el = $("authMessage"); el.textContent = msg; el.className = "auth-message" + (type ? " " + type : ""); }
+  function setAuthBusy(b, msg = "") { authBusy = b; $("signInBtn").disabled = b; $("signUpBtn").disabled = b; $("email").disabled = b; $("password").disabled = b; if (b && msg) setAuthMessage(msg); }
+  function safeText(v) { return String(v ?? ""); }
+  function fmtDate(iso) { if (!iso) return ""; try { return new Date(iso).toLocaleDateString(undefined, {month:"short",day:"numeric"}); } catch { return ""; } }
+
+  function showAuth() {
+    session = null; currentConversationId = null;
+    authView.classList.remove("hidden"); appView.classList.add("hidden");
+    $("userLabel").textContent = ""; $("userLabel").classList.add("hidden");
+    $("headerAuthBtn").textContent = "Sign in"; $("deleteCurrentBtn").classList.add("hidden");
+    showWelcome();
   }
-  async function openConversation(chat){
-    currentConversationId=chat.id;setTool(chat.tool);showView("chat");messagesEl.innerHTML="";setStatus("Loading conversation…");
-    const {data,error}=await supabaseClient.from("messages").select("role,content").eq("conversation_id",chat.id).order("created_at",{ascending:true});
-    if(error){setStatus("Could not load this conversation: "+error.message,"error");return;}
-    if(!data.length)showWelcome();else data.forEach(m=>addBubble(m.role,m.content));
-    setStatus("Conversation loaded.");await loadHistory();
+
+  function showApp() {
+    if (!session?.user) { showAuth(); return; }
+    authView.classList.add("hidden"); appView.classList.remove("hidden");
+    const email = session.user.email || "";
+    $("userLabel").textContent = email; $("userLabel").classList.remove("hidden");
+    $("headerAuthBtn").textContent = "Sign out"; $("accountEmail").textContent = "Signed in as: " + email;
   }
-  async function deleteConversation(id){
-    if(!confirm("Delete this conversation and its messages?"))return;
-    const {error}=await supabaseClient.from("conversations").delete().eq("id",id);
-    if(error){setStatus("Could not delete conversation: "+error.message,"error");return;}
-    if(currentConversationId===id){currentConversationId=null;showWelcome();}
-    setStatus("Conversation deleted.","ok");await loadHistory();
+
+  function addBubble(role, content) {
+    const box = document.createElement("div"); box.className = "bubble " + (role === "user" ? "user" : "assistant");
+    const label = document.createElement("span"); label.className = "role"; label.textContent = role === "user" ? "You" : ("Nexora AI · " + (TOOL_NAMES[currentTool] || "AI"));
+    const body = document.createElement("div"); body.textContent = safeText(content);
+    box.append(label, body); messagesEl.appendChild(box); messagesEl.scrollTop = messagesEl.scrollHeight;
+    return box;
   }
-  function newChat(){currentConversationId=null;showView("chat");showWelcome();$("promptInput").value="";setStatus("New conversation. Your chat will be saved after you send a message.");loadHistory();}
-  async function saveMessage(conversationId,role,content){
-    const {error}=await supabaseClient.from("messages").insert({conversation_id:conversationId,user_id:session.user.id,role,content});
-    if(error)throw error;
-    await supabaseClient.from("conversations").update({updated_at:new Date().toISOString()}).eq("id",conversationId);
+
+  function showWelcome() {
+    messagesEl.innerHTML = '<div class="welcome"><div class="spark">✦</div><h3>What would you like to explore?</h3><div>Choose a tool and enter your prompt below to get started.</div></div>';
   }
-  async function sendPrompt(){
-    if(sending)return;
-    if(!session){setStatus("Please sign in first.","error");return;}
-    const prompt=$("promptInput").value.trim();if(!prompt){setStatus("Enter a prompt first.","error");return;}
-    sending=true;$("sendBtn").disabled=true;$("promptInput").disabled=true;setStatus("Thinking…");
-    if(!currentConversationId){
-      const title=prompt.replace(/\s+/g," ").slice(0, 50)||"New chat";
-      const {data,error}=await supabaseClient.from("conversations").insert({user_id:session.user.id,title,tool:currentTool}).select("id").single();
-      if(error){setStatus("Could not create conversation: "+error.message,"error");finishSend();return;}
-      currentConversationId=data.id;
+
+  async function setTool(tool, syncDb = false) {
+    if (!TOOL_NAMES[tool]) return;
+    currentTool = tool;
+    document.querySelectorAll(".tool").forEach(b => b.classList.toggle("active", b.dataset.tool === tool));
+    $("workspaceHeading").textContent = TOOL_NAMES[tool];
+    if (syncDb && currentConversationId && session) {
+      await supabaseClient.from("conversations").update({tool:currentTool, updated_at:new Date().toISOString()}).eq("id", currentConversationId);
+      await loadHistory();
     }
-    const userPrompt=prompt;$("promptInput").value="";
-    if(messagesEl.querySelector(".welcome"))messagesEl.innerHTML="";
-    addBubble("user",userPrompt);
-    try{
-      await saveMessage(currentConversationId,"user",userPrompt);
-      const {data:sessionData}=await supabaseClient.auth.getSession();
-      const accessToken=sessionData.session?.access_token;
-      if(!accessToken)throw new Error("Your session expired. Please sign in again.");
-      const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),90000);
+  }
+
+  function showView(view) {
+    $("chatView").classList.toggle("hidden", view !== "chat");
+    $("dashboardView").classList.toggle("hidden", view !== "dashboard");
+    document.querySelectorAll(".nav-btn[data-view]").forEach(b => b.classList.toggle("active", b.dataset.view === view));
+    if (view === "dashboard") loadDashboard();
+  }
+
+  function validateAuth() {
+    const email = $("email").value.trim(), password = $("password").value;
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setAuthMessage("Please enter a valid email address.", "error"); return null; }
+    if (!password || password.length < 6) { setAuthMessage("Password must be at least 6 characters.", "error"); return null; }
+    return {email, password};
+  }
+
+  async function handleSignIn(e) {
+    if (e) e.preventDefault();
+    if (authBusy) return;
+    const creds = validateAuth(); if (!creds) return;
+    setAuthBusy(true, "Signing in…");
+    try {
+      const {data, error} = await supabaseClient.auth.signInWithPassword(creds);
+      if (error) throw error;
+      if (data?.session) {
+        session = data.session; $("password").value = ""; setAuthMessage("Signed in!", "ok");
+        showApp(); await loadHistory(); await loadDashboard();
+      } else {
+        setAuthMessage("Please confirm your email inbox before signing in.", "error");
+      }
+    } catch (err) { setAuthMessage(err.message || "Sign in failed.", "error"); }
+    finally { setAuthBusy(false); }
+  }
+
+  async function handleSignUp() {
+    if (authBusy) return;
+    const creds = validateAuth(); if (!creds) return;
+    setAuthBusy(true, "Creating account…");
+    try {
+      const {data, error} = await supabaseClient.auth.signUp(creds);
+      if (error) throw error;
+      if (data?.session) {
+        session = data.session; $("password").value = ""; setAuthMessage("Account created!", "ok");
+        showApp(); await loadHistory(); await loadDashboard(); return;
+      }
+      if (data?.user?.identities?.length === 0) setAuthMessage("Account already exists. Please click Sign in.", "error");
+      else setAuthMessage("Account created! Check your email inbox to confirm your account, then sign in.", "ok");
+    } catch (err) { setAuthMessage(err.message || "Sign up failed.", "error"); }
+    finally { setAuthBusy(false); }
+  }
+
+  async function handleSignOut() {
+    try { await supabaseClient.auth.signOut(); showAuth(); setAuthMessage("Signed out safely.", "ok"); }
+    catch (err) { setStatus("Sign out failed: " + err.message, "error"); }
+  }
+
+  async function loadHistory() {
+    if (!session?.user) return;
+    const {data, error} = await supabaseClient.from("conversations").select("id,title,tool,updated_at").eq("user_id", session.user.id).order("updated_at", {ascending:false}).limit(50);
+    if (error) { $("historyList").innerHTML = '<div class="empty-note">Could not load chat history.</div>'; return; }
+    const list = data || []; $("chatCount").textContent = String(list.length); $("historyList").innerHTML = "";
+    if (!list.length) { $("historyList").innerHTML = '<div class="empty-note">Your saved chats will appear here.</div>'; return; }
+    list.forEach(chat => {
+      const row = document.createElement("div"); row.className = "history-item" + (chat.id === currentConversationId ? " active" : "");
+      const info = document.createElement("div"); info.className = "history-info";
+      const title = document.createElement("span"); title.className = "history-title"; title.textContent = chat.title || "New chat";
+      const meta = document.createElement("span"); meta.className = "history-meta"; meta.textContent = (TOOL_NAMES[chat.tool] || "AI Chat") + " · " + fmtDate(chat.updated_at);
+      info.append(title, meta);
+      const del = document.createElement("button"); del.type = "button"; del.className = "del-btn"; del.textContent = "✕";
+      del.addEventListener("click", e => { e.stopPropagation(); deleteConversation(chat.id); });
+      row.append(info, del); row.addEventListener("click", () => openConversation(chat));
+      $("historyList").appendChild(row);
+    });
+  }
+
+  async function openConversation(chat) {
+    if (sending || !session?.user) return;
+    currentConversationId = chat.id; await setTool(chat.tool || "chat", false); showView("chat");
+    $("deleteCurrentBtn").classList.remove("hidden"); messagesEl.innerHTML = ""; setStatus("Loading conversation…");
+    const {data, error} = await supabaseClient.from("messages").select("role,content").eq("conversation_id", chat.id).order("created_at", {ascending:true});
+    if (error) { setStatus("Could not load conversation: " + error.message, "error"); showWelcome(); return; }
+    if (!data?.length) showWelcome(); else data.forEach(m => addBubble(m.role, m.content));
+    setStatus("Conversation loaded.", "ok"); await loadHistory();
+  }
+
+  async function deleteConversation(id) {
+    if (!id || !session?.user || !confirm("Delete this conversation and its messages?")) return;
+    await supabaseClient.from("messages").delete().eq("conversation_id", id).eq("user_id", session.user.id);
+    const {error} = await supabaseClient.from("conversations").delete().eq("id", id).eq("user_id", session.user.id);
+    if (error) { setStatus("Could not delete: " + error.message, "error"); return; }
+    if (currentConversationId === id) { currentConversationId = null; $("deleteCurrentBtn").classList.add("hidden"); showWelcome(); }
+    setStatus("Conversation deleted.", "ok"); await loadHistory(); loadDashboard();
+  }
+
+  function newChat() {
+    if (sending) return;
+    currentConversationId = null; $("deleteCurrentBtn").classList.add("hidden");
+    showView("chat"); showWelcome(); $("promptInput").value = "";
+    setStatus("New conversation ready."); loadHistory();
+  }
+
+  async function saveMessage(conversationId, role, content) {
+    const {error} = await supabaseClient.from("messages").insert({conversation_id:conversationId, user_id:session.user.id, role, content});
+    if (error) throw error;
+    await supabaseClient.from("conversations").update({tool:currentTool, updated_at:new Date().toISOString()}).eq("id", conversationId);
+  }
+
+  function finishSend() {
+    sending = false; $("sendBtn").disabled = false; $("sendBtn").textContent = "Generate ↗";
+    $("promptInput").disabled = false; $("conversationBadge").textContent = "● AI ready"; $("promptInput").focus();
+  }
+
+  async function sendPrompt() {
+    if (sending) return;
+    if (!session?.user) { setStatus("Please sign in first.", "error"); showAuth(); return; }
+    const prompt = $("promptInput").value.trim();
+    if (!prompt) { setStatus("Enter a prompt first.", "error"); return; }
+    sending = true; $("sendBtn").disabled = true; $("sendBtn").textContent = "Generating…"; $("promptInput").disabled = true;
+    $("conversationBadge").textContent = "● Generating…"; setStatus("Thinking…");
+
+    if (!currentConversationId) {
+      const title = prompt.replace(/\s+/g, " ").slice(0, 50) || "New chat";
+      const {data, error} = await supabaseClient.from("conversations").insert({user_id:session.user.id, title, tool:currentTool}).select("id").single();
+      if (error || !data) { setStatus("Could not create conversation: " + (error?.message || "Error"), "error"); finishSend(); return; }
+      currentConversationId = data.id; $("deleteCurrentBtn").classList.remove("hidden");
+    }
+
+    $("promptInput").value = "";
+    if (messagesEl.querySelector(".welcome")) messagesEl.innerHTML = "";
+    addBubble("user", prompt);
+    const loadingBubble = addBubble("assistant", "Thinking…");
+
+    try {
+      await saveMessage(currentConversationId, "user", prompt);
+      const {data:sessionData} = await supabaseClient.auth.getSession();
+      const accessToken = sessionData?.session?.access_token;
+      if (!accessToken) throw new Error("Your session expired. Please sign in again.");
+
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 90000);
       let response;
-      try{response=await fetch(AI_API_URL,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+accessToken},body:JSON.stringify({tool:currentTool,prompt:userPrompt}),signal:controller.signal});}finally{clearTimeout(timer);}
-      const result=await response.json().catch(()=>({}));
-      if(!response.ok)throw new Error(result.error||result.message||("AI request failed ("+response.status+")."));
-      const answer=result.text||result.response||result.result;
-      if(!answer)throw new Error("The AI returned an empty response.");
-      await saveMessage(currentConversationId,"assistant",answer);addBubble("assistant",answer);setStatus("Response generated and saved.","ok");
-    }catch(error){const msg=error.name==="AbortError"?"The request took too long. Please try again.":error.message||"Something went wrong.";setStatus(msg,"error");addBubble("assistant","I couldn't complete that request. "+msg);}
-    await loadHistory();finishSend
+      try {
+        response = await fetch(AI_API_URL, {
+          method: "POST",
+          headers: {"Content-Type":"application/json", "Authorization":"Bearer " + accessToken},
+          body: JSON.stringify({tool:currentTool, prompt}),
+          signal: controller.signal
+        });
+      } finally { clearTimeout(timer); }
+
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || result.message || ("AI request failed (" + response.status + ")."));
+      const answer = result.text || result.response || result.result || result.reply || result?.choices?.[0]?.message?.content;
+      if (!answer) throw new Error("The AI returned an empty response.");
+
+      loadingBubble.remove();
+      await saveMessage(currentConversationId, "assistant", answer);
+      addBubble("assistant", answer);
+      setStatus("Response generated and saved.", "ok");
+    } catch (err) {
+      loadingBubble.remove();
+      const msg = err.name === "AbortError" ? "Request timed out. Please try again." : (err.message || "Something went wrong.");
+      setStatus(msg, "error");
+      addBubble("assistant", "I couldn't complete that request. " + msg);
+    } finally {
+      await loadHistory(); finishSend();
+    }
+  }
+
+  async function loadDashboard() {
+    if (!session?.user) return;
+    $("accountEmail").textContent = "Signed in as: " + (session.user.email || "");
+    const [cRes, mRes, rRes] = await Promise.all([
+      supabaseClient.from("conversations").select("id", {count:"exact", head:true}).eq("user_id", session.user.id),
+      supabaseClient.from("messages").select("id", {count:"exact", head:true}).eq("user_id", session.user.id),
+      supabaseClient.from("conversations").select("id,title,tool,updated_at").eq("user_id", session.user.id).order("updated_at", {ascending:false}).limit(5)
+    ]);
+    $("statChats").textContent = String(cRes.count ?? 0);
+    $("statMessages").textContent = String(mRes.count ?? 0);
+    const box = $("recentActivityList"); box.innerHTML = "";
+    const recent = rRes.data || [];
+    if (!recent.length) { box.innerHTML = "<p>No saved conversations yet.</p>"; return; }
+    recent.forEach(item => {
+      const d = document.createElement("div"); d.className = "recent-item";
+      const t = document.createElement("span"); t.style.fontWeight = "600"; t.textContent = item.title || "New chat";
+      const m = document.createElement("span"); m.style.cssText = "font-size:11px;color:#9ba3c4"; m.textContent = (TOOL_NAMES[item.tool] || "AI Chat") + " · " + fmtDate(item.updated_at);
+      d.append(t, m); d.addEventListener("click", () => openConversation(item)); box.appendChild(d);
+    });
+  }
+
+  function bindEvents() {
+    $("authForm").addEventListener("submit", handleSignIn);
+    $("signUpBtn").addEventListener("click", handleSignUp);
+    $("headerAuthBtn").addEventListener("click", () => session ? handleSignOut() : showAuth());
+    $("sideSignOutBtn").addEventListener("click", handleSignOut);
+    document.querySelectorAll(".nav-btn[data-view]").forEach(b => b.addEventListener("click", () => showView(b.dataset.view)));
+    $("backToChatBtn").addEventListener("click", () => showView("chat"));
+    $("newChatBtn").addEventListener("click", newChat);
+    $("deleteCurrentBtn").addEventListener("click", () => currentConversationId && deleteConversation(currentConversationId));
+    document.querySelectorAll(".tool").forEach(b => b.addEventListener("click", () => setTool(b.dataset.tool, true)));
+    $("sendBtn").addEventListener("click", sendPrompt);
+    $("clearBtn").addEventListener("click", () => { if ($("promptInput").value) $("promptInput").value = ""; else newChat(); });
+    $("promptInput").addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendPrompt(); } });
+  }
+
+  async function init() {
+    bindEvents();
+    if (!window.supabase) { setAuthMessage("Could not load Supabase SDK.", "error"); return; }
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+    const {data} = await supabaseClient.auth.getSession();
+    if (data?.session) { session = data.session; showApp(); await loadHistory(); await loadDashboard(); }
+    else showAuth();
+    supabaseClient.auth.onAuthStateChange(async (_event, newSession) => {
+      session = newSession;
+      if (session?.user) { showApp(); await loadHistory(); } else showAuth();
+    });
+  }
+  init();
+})();
+</script>
+</body>
+</html>
