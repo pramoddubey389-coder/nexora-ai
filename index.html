@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
   <meta name="theme-color" content="#090b18">
-  <title>Nexora AI — One platform. Limitless possibilities.</title>
+  <title>Oryqentra — One platform. Limitless possibilities.</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root{--bg:#090b18;--panel:#11152a;--panel2:#171c35;--line:#272d4a;--text:#f4f5ff;--muted:#9ba3c4;--accent:#8b5cf6;--accent2:#4f8cff;--good:#35c995;--danger:#ff647c}
@@ -109,7 +109,7 @@
         <div class="dash-panel"><h3>Your privacy</h3><p>Your conversations are protected by Supabase Row Level Security. Your account can access only its own saved conversations.</p></div>
         <button id="backToChatBtn" class="btn primary" type="button" style="margin-top:15px">Open AI Workspace</button>
       </section>
-      <footer>Nexora AI (Future Oryqentra) · Built for learning and creativity</footer>
+      <footer>Oryqentra · Built for learning and creativity</footer>
     </main>
   </div>
 
@@ -148,7 +148,7 @@
 
   function addBubble(role, content) {
     const box = document.createElement("div"); box.className = "bubble " + (role === "user" ? "user" : "assistant");
-    const label = document.createElement("span"); label.className = "role"; label.textContent = role === "user" ? "You" : ("Nexora AI · " + (TOOL_NAMES[currentTool] || "AI"));
+    const label = document.createElement("span"); label.className = "role"; label.textContent = role === "user" ? "You" : ("Oryqentra · " + (TOOL_NAMES[currentTool] || "AI"));
     const body = document.createElement("div"); body.textContent = safeText(content);
     box.append(label, body); messagesEl.appendChild(box); messagesEl.scrollTop = messagesEl.scrollHeight;
     return box;
